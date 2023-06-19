@@ -1,0 +1,109 @@
+<html>
+<style>
+	
+  .s1 > svg {
+		fill: red;
+		width: 20%;
+		height: auto;
+	}
+
+  .s2 > svg {
+		fill: #ff4578;
+		width: 20%;
+		height: auto;
+	}
+
+  .s3 > svg {
+		fill: chocolate;
+		width: 20%;
+		height: auto;
+	}
+
+  svg:hover {
+    fill:aquamarine
+  }
+	
+</style>
+
+<body>
+	<x-svg class="s1" src="https://www.svgrepo.com/show/13579/cancel-sticker.svg"></x-svg>
+	<x-svg class="s2" src="https://www.svgrepo.com/show/13283/browser-grid.svg"></x-svg>
+	<x-svg class="s3" src="https://www.svgrepo.com/show/8984/visible-status.svg"></x-svg>
+  <x-test></x-test>
+</body>
+
+<script>
+	class Extended_SVG_HTMLElement extends HTMLElement {
+		// Specify observed attributes so that
+		// attributeChangedCallback will work
+		static get observedAttributes() {
+			return ['src'];
+		}
+
+		constructor() {
+			// Always call super first in constructor
+			super();
+  	}
+
+		set src(v) {
+        this.setAttribute('src', v);
+    }
+
+    get src() {
+        this.getAttribute('src');
+    }
+    
+    connectedCallback() {
+			//console.log('Custom svg element added to page.');
+			this.addEventListener('click', function() {
+        console.log(this)
+      })
+		}
+
+		disconnectedCallback() {
+			//console.log('Custom svg element removed from page.');
+		}
+
+		attributeChangedCallback(name, oldValue, newValue) {
+			//console.log('Custom square element attributes changed.');
+			switch (name) {
+				case 'src':
+				  this.load(newValue);
+					break;
+        default:
+					break;
+			}
+		}
+
+		load(url) {
+			var ctx = this;
+      
+      if(!url){
+				ctx.innerHTML = "";
+				return;
+			}
+
+      //Reset if url changed...
+      ctx.innerHTML = "";
+
+			let xhr = new XMLHttpRequest();
+			xhr.crossDomain = true;
+			xhr.open("GET", url, true);
+			xhr.responseType = "text";
+			xhr.onload = function(e) {
+				if (xhr.readyState === xhr.DONE){
+					if (this.status == 200) {
+						const data = this.response;
+						ctx.innerHTML = data;
+					}
+				}
+			};
+      xhr.send();
+	  }
+	}
+
+  if (!customElements.get('x-svg')) { customElements.define('x-svg', Extended_SVG_HTMLElement);} 
+	
+</script>
+
+</html>
